@@ -13,19 +13,19 @@ function compress (string $input): string
         }
         $table[$word]++;
     }
-    $nextChar = 0x1F600;
+    $nextChar = 0x02B0;
     $strings = [];
     $chars = [];
     foreach($table as $key => $count) {
-        if ($count < 4) {
+        if ($count < 2) {
             unset($table[$key]);
         }
         $chars[] = IntlChar::chr($nextChar++);
         $strings[] = $key;
     }
 
-    $output = json_encode($strings) . '\n' . json_encode($chars) . '\n';
-    var_dump($output);
+    $output = join(',', $strings) . '\n';
+    //var_dump($output);
     $output .= str_replace($strings, $chars, $input);
 
     return $output;
@@ -33,10 +33,7 @@ function compress (string $input): string
 
 function decompress (string $input, string $firstLine, string $secondLine): string
 {
-    $chars = json_decode($secondLine);
-    foreach (json_decode($firstLine) as $key => $string) {
-        $output = preg_replace("/$string/", $chars[$key], $output);
-    }
+    $output = $input;
 
     return $output;
 }
