@@ -4,7 +4,7 @@ function compress (string $input): string
 {
     $table = [];
     foreach (explode(" ", $input) as $word) {
-        $word = trim($word, '\t\n\r\0\x0B,\.;:\s');
+        $word = preg_replace('/\t\n\r\0\x0B,\.;:\s/', '', $word);
         if (strlen($word) < 4) {
             continue;
         }
@@ -25,8 +25,9 @@ function compress (string $input): string
     }
 
     $output = join(',', $strings) . '\n';
-    //var_dump($output);
+    var_dump($output);
     $output .= str_replace($strings, $chars, $input);
+    //var_dump($output);
 
     return $output;
 }
@@ -34,6 +35,7 @@ function compress (string $input): string
 function decompress (string $input): string
 {
     $compressedArray = explode("\n", $input, 2);
+    //var_dump($input);
     $nextChar = 0x1F600;
     $output = $compressedArray[1];
 
