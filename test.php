@@ -24,16 +24,19 @@ function compress (string $input): string
         $strings[] = $key;
     }
 
-    $output = json_encode($strings) . '\n' . json_encode($chars) . '\n' . str_replace($strings, $chars, $input);
+    $output = json_encode($strings) . '\n' . json_encode($chars) . '\n';
     var_dump($output);
+    $output .= str_replace($strings, $chars, $input);
 
     return $output;
 }
 
-function decompress (string $input): string
+function decompress (string $input, string $firstLine, string $secondLine): string
 {
-    $output = $input;
-    
+    $chars = json_decode($secondLine);
+    foreach (json_decode($firstLine) as $key => $string) {
+        $output = preg_replace("/$string/", $chars[$key], $output);
+    }
 
     return $output;
 }
@@ -50,8 +53,12 @@ function test (): void
 
         $input = file_get_contents('fixtures/' . $file);
 
+        $inputArr = explode("\n", $input);
+        $firstLine = $inputArr[0];
+        $secondLine = $inputArr[1];
+
         $compressed = compress($input);
-        $decompressed = decompress($compressed);
+        $decompressed = decompress($compressed, $firstLine, $secondLine);
 
         if ($decompressed !== $input) {
             echo "FAIL: Outputs do not match!\n";
