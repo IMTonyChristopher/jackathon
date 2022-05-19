@@ -1,27 +1,38 @@
 <?php
 
 $convertTable = [
-    [
-        'string' => 'and',
-        'char' => '😀'
-    ]
+  [
+    'string' => 'and',
+    'char'   => '😀'
+  ],
+  [
+    'string' => 'the',
+    'char'   => '😂'
+  ],
 ];
 
-function compress(string $input): string
+function compress (string $input): string
 {
-    $output = '';
+    global $convertTable;
+
+    foreach ($convertTable as $item) {
+        $strings[] = $item['string'];
+        $chars[] = $item['char'];
+    }
+
+    $output = str_replace($strings, $chars, $input);
 
     return $output;
 }
 
-function decompress(string $input): string
+function decompress (string $input): string
 {
-    $output = '';
+    $output = $input;
 
     return $output;
 }
 
-function test(): void
+function test (): void
 {
     $files = scandir('fixtures');
     $ratios = [];
@@ -45,7 +56,7 @@ function test(): void
         echo 'File: ' . $file . ', Ratio: ' . round($ratio) . "%\n";
     }
 
-    $ratioAverage = array_reduce($ratios, fn ($carry, $ratio) => $carry + $ratio) / count($ratios);
+    $ratioAverage = array_reduce($ratios, fn($carry, $ratio) => $carry + $ratio) / count($ratios);
 
     echo 'Average Compression Ratio: ' . round($ratioAverage, 2) . "%\n";
 }
