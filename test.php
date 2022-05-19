@@ -175,11 +175,12 @@ function test (): void
 
         $input = file_get_contents('fixtures/' . $file);
 
-        $inputArr = explode("\n", $input);
+        $compressed = compress($input);
+
+        $inputArr = explode("\n", $compressed);
         $firstLine = $inputArr[0];
         $secondLine = $inputArr[1];
 
-        $compressed = compress($input);
         $decompressed = decompress($compressed, $firstLine, $secondLine);
 
         if ($decompressed !== $input) {
