@@ -16,7 +16,12 @@ function compress(string $input): string
 
 function decompress(string $input): string
 {
-    $output = '';
+    global $convertTable;
+    $output = $input;
+    foreach ($convertTable as $replacement) {
+        $char = $replacement['char'];
+        $output = preg_replace("/$char/", $replacement['string'], $output);
+    }
 
     return $output;
 }
