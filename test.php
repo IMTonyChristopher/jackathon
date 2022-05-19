@@ -3,12 +3,12 @@
 function compress (string $input): string
 {
     $table = [];
-    foreach(explode(" ", $input) as $word) {
+    foreach (explode(" ", $input) as $word) {
         $word = trim($word, '\t\n\r\0\x0B,\.;:\s');
         if (strlen($word) < 4) {
             continue;
         }
-        if (! array_key_exists($word, $table)) {
+        if (!array_key_exists($word, $table)) {
             $table[$word] = 0;
         }
         $table[$word]++;
@@ -16,7 +16,7 @@ function compress (string $input): string
     $nextChar = 0x1F600;
     $strings = [];
     $chars = [];
-    foreach($table as $key => $count) {
+    foreach ($table as $key => $count) {
         if ($count < 2) {
             unset($table[$key]);
         }
@@ -31,9 +31,17 @@ function compress (string $input): string
     return $output;
 }
 
-function decompress (string $input, string $firstLine, string $secondLine): string
+function decompress (string $input): string
 {
-    $output = $input;
+    $compressedArray = explode("\n", $input, 2);
+    $nextChar = 0x1F600;
+    $output = $compressedArray[1];
+
+    $arr = explode(',', $compressedArray[0]);
+
+    foreach ($arr as $key => $string) {
+        $output = preg_replace("/$string/", IntlChar::chr($nextChar++), $output);
+    }
 
     return $output;
 }
@@ -51,12 +59,7 @@ function test (): void
         $input = file_get_contents('fixtures/' . $file);
 
         $compressed = compress($input);
-
-        $inputArr = explode("\n", $compressed);
-        $firstLine = $inputArr[0];
-        $secondLine = $inputArr[1];
-
-        $decompressed = decompress($compressed, $firstLine, $secondLine);
+        $decompressed = decompress($compressed);
 
         if ($decompressed !== $input) {
             echo "FAIL: Outputs do not match!\n";
