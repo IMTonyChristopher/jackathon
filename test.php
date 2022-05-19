@@ -1,5 +1,12 @@
 <?php
 
+$convertTable = [
+    [
+        'string' => 'and',
+        'char' => '😀'
+    ]
+];
+
 function compress(string $input): string
 {
     $output = '';
