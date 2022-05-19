@@ -13,7 +13,7 @@ function compress (string $input): string
         }
         $table[$word]++;
     }
-    $nextChar = 0x02B0;
+    $nextChar = 0x1F600;
     $strings = [];
     $chars = [];
     foreach($table as $key => $count) {
