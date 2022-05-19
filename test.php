@@ -153,13 +153,11 @@ function compress (string $input): string
     return $output;
 }
 
-function decompress (string $input): string
+function decompress (string $input, string $firstLine, string $secondLine): string
 {
-    global $convertTable;
-    $output = $input;
-    foreach ($convertTable as $replacement) {
-        $char = $replacement['char'];
-        $output = preg_replace("/$char/", $replacement['string'], $output);
+    $chars = json_decode($secondLine);
+    foreach (json_decode($firstLine) as $key => $string) {
+        $output = preg_replace("/$string/", $chars[$key], $output);
     }
 
     return $output;
@@ -177,8 +175,12 @@ function test (): void
 
         $input = file_get_contents('fixtures/' . $file);
 
+        $inputArr = explode("\n", $input);
+        $firstLine = $inputArr[0];
+        $secondLine = $inputArr[1];
+
         $compressed = compress($input);
-        $decompressed = decompress($compressed);
+        $decompressed = decompress($compressed, $firstLine, $secondLine);
 
         if ($decompressed !== $input) {
             echo "FAIL: Outputs do not match!\n";
