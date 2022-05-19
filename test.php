@@ -1,166 +1,39 @@
 <?php
 
-$convertTable = [
-    [
-        'string' => 'and',
-        'char' => '😀'
-    ],
-    [
-        'string' => 'the',
-        'char' => '😄'
-    ],
-    [
-        'string' => 'that',
-        'char' => '😁'
-    ],
-    [
-        'string' => 'have',
-        'char' => '😆'
-    ],
-    [
-        'string' => 'for',
-        'char' => '😅'
-    ],
-    [
-        'string' => 'not',
-        'char' => '🤣'
-    ],
-    [
-        'string' => 'with',
-        'char' => '😂'
-    ],
-    [
-        'string' => 'you',
-        'char' => '🙂'
-    ],
-    [
-        'string' => 'this',
-        'char' => '🙃'
-    ],
-    [
-        'string' => 'but',
-        'char' => '😉'
-    ],
-    [
-        'string' => 'his',
-        'char' => '😊'
-    ],
-    [
-        'string' => 'from',
-        'char' => '😇'
-    ],
-    [
-        'string' => 'they',
-        'char' => '🥰'
-    ],
-    [
-        'string' => 'say',
-        'char' => '😍'
-    ],
-    [
-        'string' => 'her',
-        'char' => '🤩'
-    ],
-    [
-        'string' => 'she',
-        'char' => '😘'
-    ],
-    [
-        'string' => 'will',
-        'char' => '😗'
-    ],
-    [
-        'string' => 'one',
-        'char' => '☺'
-    ],
-    [
-        'string' => 'all',
-        'char' => '😚'
-    ],
-    [
-        'string' => 'would',
-        'char' => '😙'
-    ],
-    [
-        'string' => 'there',
-        'char' => '😋'
-    ],
-    [
-        'string' => 'their',
-        'char' => '😛'
-    ],
-    [
-        'string' => 'what',
-        'char' => '😜'
-    ],
-    [
-        'string' => 'out',
-        'char' => '🤪'
-    ],
-    [
-        'string' => 'about',
-        'char' => '😝'
-    ],
-    [
-        'string' => 'who',
-        'char' => '🤑'
-    ],
-    [
-        'string' => 'get',
-        'char' => '🤗'
-    ],
-    [
-        'string' => 'which',
-        'char' => '🤭'
-    ],
-    [
-        'string' => 'when',
-        'char' => '🤫'
-    ],
-    [
-        'string' => 'make',
-        'char' => '🤔'
-    ],
-    [
-        'string' => 'can',
-        'char' => '🤐'
-    ],
-    [
-        'string' => 'like',
-        'char' => '🤨'
-    ],
-    [
-        'string' => 'time',
-        'char' => '😐'
-    ],
-    [
-        'string' => 'just',
-        'char' => '😑'
-    ],
-];
-
 function compress (string $input): string
 {
-    global $convertTable;
-
-    foreach ($convertTable as $item) {
-        $strings[] = $item['string'];
-        $chars[] = $item['char'];
+    $table = [];
+    foreach(explode(" ", $input) as $word) {
+        $word = trim($word, '\t\n\r\0\x0B,\.;:\s');
+        if (strlen($word) < 4) {
+            continue;
+        }
+        if (! array_key_exists($word, $table)) {
+            $table[$word] = 0;
+        }
+        $table[$word]++;
+    }
+    $nextChar = 0x1F600;
+    $strings = [];
+    $chars = [];
+    foreach($table as $key => $count) {
+        if ($count < 4) {
+            unset($table[$key]);
+        }
+        $chars[] = IntlChar::chr($nextChar++);
+        $strings[] = $key;
     }
 
-    $output = str_replace($strings, $chars, $input);
+    $output = json_encode($strings) . '\n' . json_encode($chars) . '\n' . str_replace($strings, $chars, $input);
+    var_dump($output);
 
     return $output;
 }
 
 function decompress (string $input): string
 {
-    global $convertTable;
     $output = $input;
-    foreach ($convertTable as $replacement) {
-        $char = $replacement['char'];
-        $output = preg_replace("/$char/", $replacement['string'], $output);
-    }
+    
 
     return $output;
 }
